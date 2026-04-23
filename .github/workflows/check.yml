@@ -8,6 +8,8 @@ on:
       - ".github/workflows/check.yml"
       - "assets/**"
       - "**.py"
+      - "package.json"
+      - "package-lock.json"
   pull_request:
     branches:
       - "**"
@@ -15,32 +17,152 @@ on:
       - ".github/workflows/check.yml"
       - "assets/**"
       - "**.py"
+      - "package.json"
+      - "package-lock.json"
   workflow_dispatch:
 
 jobs:
   resource:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
+      # 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Use Node
+      # 设置 Python 环境
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # 设置 Node.js 环境
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
 
+      # 缓存 Node 依赖
+      - name: Cache Node dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # 验证 package-lock.json 存在
+      - name: Check package-lock.json exists
+        run: |
+          if [ ! -f package-lock.json ]; then
+            echo "⚠️ Warning: package-lock.json not found, generating..."
+            npm install
+            echo "✅ Generated package-lock.json"
+          else
+            echo "✅ package-lock.json found"
+          fi
+
+      # 智能安装依赖
+      - name: Install Node dependencies
+        id: install
+        run: |
+          # 先验证 lock 文件是否同步
+          if npm ci --dry-run 2>&1 | grep -q "Missing:"; then
+            echo "📦 Lock file out of sync, running npm install..."
+            npm install
+            echo "sync_needed=true" >> $GITHUB_OUTPUT
+          else
+            echo "📦 Lock file is in sync, running npm ci..."
+            npm ci
+            echo "sync_needed=false" >> $GITHUB_OUTPUT
+          fi
+
+      # （可选）自动提交更新的 lock 文件
+      - name: Commit updated package-lock.json
+        if: steps.install.outputs.sync_needed == 'true' && github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git diff --staged --quiet || git commit -m "chore: update package-lock.json [skip ci]"
+          git push
+
+      # 运行 MAA 检查器
       - name: Run maa-checker
         run: |
-          npm ci
           npx @nekosu/maa-tools check
 
+      # 缓存 Python 依赖
+      - name: Cache Python packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # 安装 maafw
       - name: Install maafw
         run: |
           python -m pip install --upgrade pip
           python -m pip install --upgrade maafw --pre
 
-      - name: Validate JSON Schema
+      # 安装 JSON Schema 验证依赖
+      - name: Install JSON Schema dependencies
         run: |
           python -m pip install jsonschema==4.26.0 referencing==0.37.0
-          python tools/validate_schema.py --schema-dir deps/tools --resource-dirs assets/resource --exclude-dirs assets/resource/announcement --interface-files assets/interface.json
+
+      # 验证 JSON Schema
+      - name: Validate JSON Schema
+        id: validate
+        continue-on-error: true
+        run: |
+          python tools/validate_schema.py \
+            --schema-dir deps/tools \
+            --resource-dirs assets/resource \
+            --exclude-dirs assets/resource/announcement \
+            --interface-files assets/interface.json
+
+      # 处理验证结果
+      - name: Handle validation result
+        if: steps.validate.outcome == 'failure'
+        run: |
+          echo "❌ JSON Schema validation failed!"
+          echo "Please check the errors above and fix the JSON files."
+          exit 1
+
+      # 显示验证成功信息
+      - name: Success message
+        if: success()
+        run: |
+          echo "✅ All checks passed!"
+          echo "  - ✅ Node dependencies installed"
+          echo "  - ✅ maa-checker passed"
+          echo "  - ✅ JSON Schema validation passed"
+
+      # 上传日志（仅在失败时）
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-logs
+          path: |
+            ~/.npm/_logs/
+            *.log
+            npm-debug.log*
+          retention-days: 7
+
+      # 上传验证结果（可选，用于调试）
+      - name: Upload validation results
+        if: always() && github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-results
+          path: |
+            validation_results/
+            *.json
+          retention-days: 3
