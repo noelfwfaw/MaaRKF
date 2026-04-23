@@ -1,0 +1,398 @@
+{
+    "循环开始": {
+        "next": [
+            "调整时间"
+        ]
+    },
+    "调整时间": {
+        "next": [
+            "触摸传送点"
+        ]
+    },
+    "触摸传送点": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    678,
+                    304,
+                    282,
+                    177
+                ],
+                "expected": "触碰"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "消磨时间"
+        ]
+    },
+    "消磨时间": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    915,
+                    470,
+                    163,
+                    89
+                ],
+                "template": "消磨时间.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "调整到早上"
+        ]
+    },
+    "调整到早上": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    948,
+                    379,
+                    113,
+                    81
+                ],
+                "expected": "早上"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "关闭传送点"
+        ]
+    },
+    "关闭传送点": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    914,
+                    522,
+                    189,
+                    83
+                ],
+                "template": "离开.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "重置计时器"
+        ]
+    },
+    "重置计时器": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "ResetTimer"
+            }
+        },
+        "action": {
+            "type": "DoNothing"
+        },
+        "next": [],
+        "on_error": []
+    },
+    "丢1号精灵": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    988,
+                    569,
+                    37,
+                    22
+                ]
+            }
+        },
+        "next": [
+            "选择精灵2"
+        ]
+    },
+    "丢2号精灵": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    988,
+                    569,
+                    37,
+                    22
+                ]
+            }
+        },
+        "next": [
+            "选择精灵3"
+        ]
+    },
+    "丢3号精灵": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    988,
+                    569,
+                    37,
+                    22
+                ]
+            }
+        },
+        "next": [
+            "选择精灵4"
+        ]
+    },
+    "丢4号精灵": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    988,
+                    569,
+                    37,
+                    22
+                ]
+            }
+        },
+        "next": [
+            "选择精灵5"
+        ]
+    },
+    "丢5号精灵": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    988,
+                    569,
+                    37,
+                    22
+                ]
+            }
+        },
+        "next": [
+            "选择精灵6"
+        ]
+    },
+    "丢6号精灵": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    988,
+                    569,
+                    37,
+                    22
+                ]
+            }
+        },
+        "next": [
+            "做动作循环"
+        ]
+    },
+    "做动作循环": {
+        "anchor": "LoopPoint",
+        "next": [
+            "检查计时"
+        ]
+    },
+    "检查计时": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "CheckTimer"
+            }
+        },
+        "action": {
+            "type": "DoNothing"
+        },
+        "next": [],
+        "on_error": []
+    },
+    "做动作": {
+        "action": {
+            "type": "LongPress",
+            "param": {
+                "target": [
+                    512,
+                    411,
+                    46,
+                    49
+                ],
+                "duration": 1000
+            }
+        },
+        "next": [
+            "大笑"
+        ]
+    },
+    "大笑": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    532,
+                    506,
+                    104,
+                    113
+                ],
+                "template": "大笑.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "关闭动作"
+        ]
+    },
+    "关闭动作": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    787,
+                    498,
+                    27,
+                    37
+                ],
+                "template": "关闭动作.png"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "计数"
+        ]
+    },
+    "计数": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "ActionCounter"
+            }
+        },
+        "action": {
+            "type": "DoNothing"
+        },
+        "next": [],
+        "on_error": []
+    },
+    "选择精灵1": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    75,
+                    61,
+                    87,
+                    87
+                ],
+                "template": "精灵1.png"
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    112,
+                    98,
+                    17,
+                    17
+                ]
+            }
+        },
+        "next": [
+            "丢1号精灵"
+        ]
+    },
+    "选择精灵2": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    110,
+                    155,
+                    21,
+                    24
+                ]
+            }
+        },
+        "next": [
+            "丢2号精灵"
+        ]
+    },
+    "选择精灵3": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    111,
+                    221,
+                    17,
+                    19
+                ]
+            }
+        },
+        "next": [
+            "丢3号精灵"
+        ]
+    },
+    "选择精灵4": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    111,
+                    285,
+                    20,
+                    20
+                ]
+            }
+        },
+        "next": [
+            "丢4号精灵"
+        ]
+    },
+    "选择精灵5": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    111,
+                    348,
+                    17,
+                    12
+                ]
+            }
+        },
+        "next": [
+            "丢5号精灵"
+        ]
+    },
+    "选择精灵6": {
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [
+                    111,
+                    406,
+                    17,
+                    15
+                ]
+            }
+        },
+        "next": [
+            "丢6号精灵"
+        ]
+    }
+}
