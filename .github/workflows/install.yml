@@ -6,6 +6,10 @@ on:
       - "v*"
   workflow_dispatch:
 
+# 为所有 job 设置默认权限（可选，但推荐）
+permissions:
+  contents: write
+
 jobs:
   meta:
     runs-on: ubuntu-latest
@@ -198,6 +202,9 @@ jobs:
     if: ${{ needs.meta.outputs.is_release == 'true' }}
     needs: [meta, install, changelog]
     runs-on: ubuntu-latest
+    # 为这个 job 单独设置权限（如果顶层没有设置，这里必须添加）
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v4
         with:
