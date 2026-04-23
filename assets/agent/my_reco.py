@@ -15,9 +15,15 @@ class GlobalState:
 state = GlobalState()
 
 
-def log_info(message: str):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[INFO][{timestamp}] {message}")
+def override_focus(context: Context, node_name: str, message: str):
+    """动态覆盖当前节点的 focus 字段"""
+    context.override_pipeline({
+        node_name: {
+            "focus": {
+                "succeeded": [message]
+            }
+        }
+    })
 
 
 @AgentServer.custom_recognition("ResetTimer")
@@ -31,12 +37,11 @@ class ResetTimerRecognition(CustomRecognition):
         state.action_count = 0
         state.cycle_count += 1
 
-        log_info(f"========== 第 {state.cycle_count} 个25分钟周期开始 ==========")
-        log_info(f"开始时间: {datetime.fromtimestamp(state.cycle_start_time).strftime('%H:%M:%S')}")
+        start_time_str = datetime.fromtimestamp(state.cycle_start_time).strftime('%H:%M:%S')
+        message = f"第 {state.cycle_count} 个25分钟周期开始，开始时间: {start_time_str}"
+        override_focus(context, argv.node_name, message)
 
-        # 设置下一步为选择精灵1
         context.override_next(argv.node_name, ["选择精灵1"])
-
         return CustomRecognition.AnalyzeResult(box=(0, 0, 0, 0), detail="timer_reset")
 
 
@@ -47,18 +52,18 @@ class CheckTimerRecognition(CustomRecognition):
         context: Context,
         argv: CustomRecognition.AnalyzeArg,
     ) -> CustomRecognition.AnalyzeResult:
-        # 首次运行
         if state.cycle_start_time == 0:
-            log_info(f"[计时] 首次运行，开始计时")
             state.cycle_start_time = time.time()
             state.cycle_count += 1
+            override_focus(context, argv.node_name, "计时开始，进入动作循环")
             context.override_next(argv.node_name, ["做动作"])
             return CustomRecognition.AnalyzeResult(box=(0, 0, 0, 0), detail="first_start")
 
         elapsed = time.time() - state.cycle_start_time
 
         if elapsed >= 1500:
-            log_info(f"========== 25分钟已到！共执行动作 {state.action_count} 次 ==========")
+            message = f"25分钟已到！共执行动作 {state.action_count} 次"
+            override_focus(context, argv.node_name, message)
             state.action_count = 0
             context.override_next(argv.node_name, ["调整时间"])
             return CustomRecognition.AnalyzeResult(box=(0, 0, 0, 0), detail="time_to_reset")
@@ -66,7 +71,8 @@ class CheckTimerRecognition(CustomRecognition):
             remaining = 1500 - elapsed
             minutes = int(remaining // 60)
             seconds = int(remaining % 60)
-            log_info(f"[计时] 距离下次调整时间还有 {minutes}分{seconds}秒 | 当前周期已执行动作: {state.action_count} 次")
+            message = f"距离下次调整时间还有 {minutes}分{seconds}秒 | 当前周期已执行动作: {state.action_count} 次"
+            override_focus(context, argv.node_name, message)
             context.override_next(argv.node_name, ["做动作"])
             return CustomRecognition.AnalyzeResult(box=(0, 0, 0, 0), detail="still_waiting")
 
@@ -84,12 +90,13 @@ class ActionCounterRecognition(CustomRecognition):
             elapsed = time.time() - state.cycle_start_time
             elapsed_min = int(elapsed // 60)
             elapsed_sec = int(elapsed % 60)
-            log_info(f"[计数] 动作+1 | 第 {state.cycle_count} 轮 | 已执行动作: {state.action_count} 次 | 本周期已过: {elapsed_min}分{elapsed_sec}秒")
+            message = f"动作+1 | 第 {state.cycle_count} 轮 | 已执行动作: {state.action_count} 次 | 本周期已过: {elapsed_min}分{elapsed_sec}秒"
         else:
-            log_info(f"[计数] 动作+1 | 第 {state.cycle_count} 轮 | 已执行动作: {state.action_count} 次")
+            message = f"动作+1 | 第 {state.cycle_count} 轮 | 已执行动作: {state.action_count} 次"
+
+        override_focus(context, argv.node_name, message)
 
         context.override_next(argv.node_name, ["[Anchor]LoopPoint"])
-
         return CustomRecognition.AnalyzeResult(box=(0, 0, 0, 0), detail=f"count_{state.action_count}")
 
 
