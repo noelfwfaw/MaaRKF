@@ -5,30 +5,32 @@
 
 <div align="center">
 
-# MaaPracticeBoilerplate
+# Roco Kingdom Auto Flower Script
 
 </div>
 
-本仓库为 [MaaFramework](https://github.com/MaaXYZ/MaaFramework) 所提供的项目模板，开发者可基于此模板直接创建自己的 MaaXXX 项目。
+本仓库为基于 [MaaFramework](https://github.com/MaaXYZ/MaaFramework) 所提供的项目框架，开发的 MaaRKF 项目。
 
 > **MaaFramework** 是基于图像识别技术、运用 [MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights) 开发经验去芜存菁、完全重写的新一代自动化黑盒测试框架。
 > 低代码的同时仍拥有高扩展性，旨在打造一款丰富、领先、且实用的开源库，助力开发者轻松编写出更好的黑盒测试程序，并推广普及。
 
-## 即刻开始
+## 介绍
 
-请阅读[如何开发](./docs/zh_cn/develop/how_to_develop.md)
+用于模拟器的刷花脚本，后续视情况添加其他功能（自动放技能已经由于模拟器进入战斗就封号而搁浅）。
 
-## 生态共建
+目前功能为小号自动调整时间和做大笑动作，每25分钟调整时间到早上。
 
-MAA 正计划建设为一类项目，而非舟的单一软件。
+## 如何使用
 
-若您的项目依赖于 MaaFramework，我们欢迎您将它命名为 MaaXXX, MXA, MAX 等等。当然，这是许可而不是限制，您也可以自由选择其他与 MAA 无关的名字，完全取决于您自己的想法！
+- 模拟器分辨率为1280*720
+- 小号需要站在魔力之源旁，有触摸提示
+- 小号准备6只奇丽叶
+- 有大笑动作，暂不支持鞠躬
 
-同时，我们也非常欢迎您提出 PR，在 [社区项目列表](https://github.com/MaaXYZ/MaaFramework#%E7%A4%BE%E5%8C%BA%E9%A1%B9%E7%9B%AE) 中添加上您的项目！
+## 声明
 
-## 常见问题
-
-请阅读[常见问题](./docs/zh_cn/develop/faq.md)
+- 使用脚本有封号风险，使用前默认自己承担风险。
+- 开源项目，无任何收费，如果在其他地方购买到本脚本，请退款。
 
 ## 鸣谢
 
