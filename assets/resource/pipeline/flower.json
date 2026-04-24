@@ -250,6 +250,7 @@
         "action": {
             "type": "Click"
         },
+        "repeat":2,
         "next": [
             "关闭动作"
         ]
@@ -264,13 +265,15 @@
                     27,
                     37
                 ],
-                "template": "关闭动作.png"
+                "template": "关闭动作.png",
+                "threshold":0.5
             }
         },
         "action": {
             "type": "Click"
         },
         "next": [
+            "关闭动作",
             "计数"
         ]
     },
